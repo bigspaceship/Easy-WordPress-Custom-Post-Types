@@ -42,6 +42,7 @@ class JW_Post_Type
         // First step, register that new post type
         $this->init(array(&$this, "register_post_type"));
         $this->save_post();
+        
     }
 
     /**
@@ -51,6 +52,7 @@ class JW_Post_Type
     function init($cb)
     {
         add_action("init", $cb);
+        
     }
 
     /**
@@ -60,6 +62,7 @@ class JW_Post_Type
     function admin_init($cb)
     {
         add_action("admin_init", $cb);
+        
 
     }
 
@@ -309,9 +312,26 @@ class JW_Post_Type
                     $_SESSION['taxonomy_data'] = array();
 
                 }
+                
+                
 
             });
+            
     }
+    
+    
+    function customize_messages($arr){
+    	$post_type_name = $this->post_type_name;
+
+		add_filter('post_updated_messages',function($messages) use ($post_type_name, $arr) {
+		 
+		 global $post, $post_ID;
+		 $messages[$post_type_name] = $arr;
+  
+		 return $messages;
+		});
+    }
+    
 }
 
 /*********/
