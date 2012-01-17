@@ -128,12 +128,24 @@ class JW_Post_Type
         $this->init(
             function() use($taxonomy_name, $plural, $post_type_name, $options)
             {
+				$labels = array(
+					'name' => $taxonomy_name,
+					'singular_name' => $taxonomy_name,
+					'search_items' =>  'Search '.$taxonomy_name ,
+					'all_items' => 'All '.$taxonomy_name,
+					'parent_item' => __( 'Parent Item' ),
+					'parent_item_colon' => __( 'Parent Item:' ),
+					'edit_item' => 'Edit '.$taxonomy_name, 
+					'update_item' => 'Update '.$taxonomy_name,
+					'add_new_item' => 'Add New '.$taxonomy_name,
+					'new_item_name' => 'Add New Item' 
+				); 	
+            
                 // Override defaults with user provided options
-
                 $options = array_merge(
                     array(
                          "hierarchical" => false,
-                         "label" => $taxonomy_name,
+                         "labels" => $labels,
                          "singular_label" => $plural,
                          "show_ui" => true,
                          "query_var" => true,
@@ -225,25 +237,32 @@ class JW_Post_Type
 
                             // TODO - Add the other input types.
                             $lookup = array(
-                                "text" => "<input type='text' name='$id_name' value='$value' class='widefat' />",
-                                "textarea" => "<textarea name='$id_name' class='widefat' rows='10'>$value</textarea>",
+                                "text" => "<input type='text' name='$id_name' value='$value' class='regular-text' />",
+                                "textarea" => "<textarea name='$id_name' class='widefat' rows='5'>$value</textarea>",
                                 "checkbox" => "<input type='checkbox' name='$id_name' value='$name' $checked />",
                                 "select" => isset($select) ? $select : '',
                                 "file" => "<input type='file' name='$id_name' id='$id_name' />"
                             );
                             ?>
-
-                            <p>
-                                <label><?php echo ucwords($name) . ':'; ?></label>
-                                <?php echo $lookup[is_array($type) ? $type[0] : $type]; ?>
-                            </p>
-                           
-                            <p>
+                            
+                            
+	                            <p>
+		                            <?php if (is_array($type)): ?>
+			                                <label><?php echo ucwords($name) . ':'; ?></label>
+			                                <?php echo $lookup[$type[0]]; ?>
+			                        <?php elseif ($type == "label" ): ?>   
+			                             	<label><strong><?php echo ucwords($name); ?></strong></label>
+			                        <?php else: ?>
+			                                <label><?php echo ucwords($name) . ':'; ?></label>
+			                                <?php echo $lookup[$type]; ?>
+			                        <?php endif; ?>
+	                           </p>
 
                                 <?php
                                     // If a file was uploaded, display it below the input.
                                     $file = get_post_meta($post->ID, $id_name, true);
                                     if ( $type === 'file' ) {
+                                    	echo '<p>';
                                         // display the image
                                         $file = get_post_meta($post->ID, $id_name, true);
 
@@ -256,9 +275,10 @@ class JW_Post_Type
                                                 echo "<a href='$file'>$file</a>";
                                             }
                                         }
+                                        echo '</p>';
                                     }
                                 ?>
-                            </p>
+                            
 
                             <?php
 
@@ -326,7 +346,13 @@ class JW_Post_Type
             
     }
     
-    
+    /**
+     * Allows you to customize the messages array
+     *
+     * @param string $taxonomy_name The name of the desired taxonomy
+     * @param string $plural The plural form of the taxonomy name. (Optional)
+     * @param array $options A list of overrides
+     */
     function customize_messages($arr){
     	$post_type_name = $this->post_type_name;
 
@@ -340,21 +366,5 @@ class JW_Post_Type
     }
     
 }
-
-/*********/
-/* USAGE */
-/*********/
-
-// $product = new PostType("movie");
-// $product->add_taxonomy('Actor');
-// $product->add_taxonomy('Director');
-// $product->add_meta_box('Movie Info', array(
-// 	'name' => 'text',
-// 	'rating' => 'text',
-// 	'review' => 'textarea',
-// 'Profile Image' => 'file'
-
-// ));
-
 
 
