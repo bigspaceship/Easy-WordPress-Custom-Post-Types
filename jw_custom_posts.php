@@ -74,8 +74,15 @@ class JW_Post_Type
     {
         $n = ucwords($this->post_type_name);
 
+		$labels = array(
+			'name' => $n . 's',
+			'singular_name' => $n,
+			'add_new' => _x('Add New', $n),
+			'add_new_item' => __('Add New '.$n),
+		);
+
         $args = array(
-            "label" => $n . 's',
+            "labels" => $labels,
             'singular_name' => $n,
             "public" => true,
             "publicly_queryable" => true,
